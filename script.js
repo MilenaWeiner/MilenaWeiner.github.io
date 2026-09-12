@@ -19,19 +19,39 @@
 
   /* ---------- mobile menu ---------- */
   var burger = document.getElementById("burger");
+  var menu = document.getElementById("menu");
+
+  function setMenu(open) {
+    document.body.classList.toggle("open", open);
+    if (!burger) return;
+    burger.setAttribute("aria-expanded", open ? "true" : "false");
+    burger.textContent = open ? "Close" : "Menu";
+  }
+
   if (burger) {
     burger.addEventListener("click", function () {
-      var open = document.body.classList.toggle("open");
-      burger.setAttribute("aria-expanded", open ? "true" : "false");
-      burger.textContent = open ? "Close" : "Menu";
+      setMenu(!document.body.classList.contains("open"));
     });
+
     document.addEventListener("keydown", function (ev) {
-      if (ev.key === "Escape") {
-        document.body.classList.remove("open");
-        burger.setAttribute("aria-expanded", "false");
-        burger.textContent = "Menu";
-      }
+      if (ev.key === "Escape") setMenu(false);
     });
+
+    /* Tapping an entry closes the menu. On the home page the entries are
+       anchors on this same page, so without this the menu stays open over
+       the section it just jumped to. */
+    if (menu) {
+      menu.addEventListener("click", function (ev) {
+        if (ev.target.closest("a")) setMenu(false);
+      });
+    }
+
+    /* rotating to landscape can leave the menu covering a wide layout
+       that no longer shows the burger */
+    var wide = window.matchMedia("(min-width: 861px)");
+    var onWide = function (e) { if (e.matches) setMenu(false); };
+    if (wide.addEventListener) wide.addEventListener("change", onWide);
+    else if (wide.addListener) wide.addListener(onWide);
   }
 
   /* ---------- highlight the section in view (home page only) ---------- */

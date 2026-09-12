@@ -21,6 +21,7 @@
 
   --gut: clamp(14px, 3vw, 40px);
   --rail: 1720px;
+  --bar: 46px;              /* height of the fixed top bar */
 
   --t-hero: clamp(3.2rem, 12.4vw, 12.5rem);
   --t-xl:   clamp(2.4rem, 6.6vw, 6rem);
@@ -30,7 +31,14 @@
 
 * { box-sizing: border-box; border-radius: 0 !important; }
 
-html { scroll-behavior: smooth; }
+html {
+  scroll-behavior: smooth;
+  /* anchor jumps must clear the fixed bar, or the heading lands under it */
+  scroll-padding-top: calc(var(--bar) + 12px);
+  /* stop iOS inflating type when the phone is turned sideways */
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
 
 body {
   margin: 0;
@@ -154,7 +162,7 @@ section { padding-block: clamp(56px, 8vw, 128px); }
   max-width: var(--rail);
   margin: 0 auto;
   padding: 0 var(--gut);
-  height: 46px;
+  height: var(--bar);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -206,15 +214,21 @@ section { padding-block: clamp(56px, 8vw, 128px); }
 
 .menu {
   position: fixed;
-  inset: 46px 0 0;
+  inset: var(--bar) 0 0;
   z-index: 79;
   background: var(--paper);
   display: none;
   flex-direction: column;
   border-top: 1px solid var(--ink);
+  /* a swipe on the menu must not drag the page behind it */
+  overscroll-behavior: contain;
 }
 
 body.open .menu { display: flex; }
+
+/* freeze the page while the menu covers it */
+body.open { overflow: hidden; }
+html:has(body.open) { overflow: hidden; }
 
 .menu a {
   flex: 1;
@@ -574,7 +588,7 @@ footer { border-top: 1px solid var(--ink); }
    CASE PAGES
    ========================================================================== */
 
-.case-top { padding-top: calc(46px + clamp(20px, 3vw, 44px)); }
+.case-top { padding-top: calc(var(--bar) + clamp(20px, 3vw, 44px)); }
 
 .case-title { padding-block: clamp(14px, 2vw, 28px) clamp(10px, 1.4vw, 18px); }
 .case-title h1 { font-size: var(--t-xl); }
@@ -683,6 +697,50 @@ footer { border-top: 1px solid var(--ink); }
   .figs { grid-template-columns: 1fr; }
   .pair { grid-template-columns: 1fr; }
   .nextbar { grid-template-columns: 1fr; }
+}
+
+/* --------------------------------------------------------------------------
+   TOUCH
+   A finger is about 9mm wide. Anything under 44px is a coin toss, so every
+   tappable thing gets that much height here. Pointer devices keep the tight
+   print spacing — this block never applies to them.
+   -------------------------------------------------------------------------- */
+
+@media (pointer: coarse) {
+  .mark {
+    display: flex;
+    align-items: center;
+    height: var(--bar);
+  }
+
+  .chan a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+  }
+
+  .mailto {
+    display: inline-block;
+    padding-block: 10px;
+  }
+
+  .foot-grid a,
+  .meta a,
+  .back {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+  }
+
+  .cta,
+  .skip {
+    min-height: 48px;
+    padding-inline: 22px;
+  }
+
+  /* grey-on-paper is fine on a calibrated screen, thin outdoors on a phone */
+  .dim { color: #5C5A55; }
 }
 
 @media (prefers-reduced-motion: reduce) {
