@@ -687,6 +687,17 @@ footer { border-top: 1px solid var(--ink); }
   .foot-grid { grid-template-columns: repeat(2, 1fr); }
   .svc-row { grid-template-columns: 44px minmax(0,1fr) 120px; }
   .svc-row .desc { grid-column: 2 / -1; }
+  /* the price was landing in the 44px number column and getting squeezed */
+  .svc-row .price {
+    grid-column: 2 / -1;
+    text-align: left;
+    margin-top: 10px;
+    white-space: nowrap;
+  }
+  .svc-row .price small {
+    display: inline;
+    margin: 0 10px 0 0;
+  }
 }
 
 @media (max-width: 560px) {
@@ -840,4 +851,10 @@ footer { border-top: 1px solid var(--ink); }
   clip: rect(0 0 0 0);
   clip-path: inset(50%);
   white-space: nowrap;
+}
+
+/* a long about-heading balances better than any hard-coded line break */
+.about-head {
+  text-wrap: balance;
+  text-wrap: pretty;
 }
